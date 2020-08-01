@@ -18,7 +18,7 @@ Third byte is reserved for future use.
 Fourth byte is data.
 
 #### FPGA to computer
-First byte is the system status:
+Second nibble is the system status:
 `00: Stop`, `01: Data Wait`, `02: Data Run`
 
 Second byte is reserved for future use.

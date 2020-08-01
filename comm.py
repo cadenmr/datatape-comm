@@ -20,11 +20,14 @@ import socket
 import os
 
 valid_run_modes = ('r', 'w')
+run_mode = None
 
-output_filename = 'data.bin'
 socket_port = 8887
 socket_address = input('IP of FPGA? ')
-run_mode = None
+
+# Open a socket for the FPGA
+fpga_device = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+fpga_device.bind((socket_address, socket_port))  # Bind the socket
 
 while run_mode not in valid_run_modes:
     run_mode = input('Run Mode (r/w)? ')
@@ -32,21 +35,36 @@ while run_mode not in valid_run_modes:
 # Read Data Mode
 if run_mode == 'r':
 
+    output_filename = input('Output filename? ')
+
+    # Attempt to remove an old dump with the same filename
     try:
         os.remove(output_filename)
     except FileNotFoundError:
         pass
 
+    # Open a file for binary writing
     output = open(output_filename, 'wb')
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    sock.sendto(bytes.fromhex(), (socket_address, socket_port))
-
+    # Open the FPGA for reading
+    fpga_device.sendto(bytes.fromhex('01000000'), (socket_address, socket_port))  # TODO: Set up FPGA commands
+    print('FPGA initialized')
 
 # Write Data Mode
 elif run_mode == 'w':
-    raise NotImplementedError
+
+    input_filename = input('File to write? ')
+    print('Please begin recording on the VCR')
+    input('Press enter to begin writing data')
+    print('----------------------------------')
+
+    print('File opened')
+
+    # Open the FPGA for writing
+    fpga_device.sendto(bytes.fromhex(''), (socket_address, socket_port))
+    print('FPGA initialized')
+
+
 
 else:
     raise ValueError('run_mode was not r or w (how????)')
