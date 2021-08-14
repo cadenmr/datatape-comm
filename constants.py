@@ -36,12 +36,13 @@ tape_read_end_kwd = _kwd_prefix + bytes('CTRExxxx', _byte_encoding)
 tape_write_start_kwd = _kwd_prefix + bytes('CTWSxxxx', _byte_encoding)
 # tape write end
 tape_write_end_kwd = _kwd_prefix + bytes('CTWExxxx', _byte_encoding)
+# transmission continue
+tape_write_cont_kwd = _kwd_prefix + bytes('CTWCxxxx', _byte_encoding)
+# transmission pause
+tape_write_pause_kwd = _kwd_prefix + bytes('CTWPxxxx', _byte_encoding)
 
 # command acknowledge
 cmd_ack = _kwd_prefix + bytes('CACKxxxx', _byte_encoding)
-
-# transmission pause
-cmd_pause = _kwd_prefix + bytes('CPAUxxxx', _byte_encoding)
 
 # keyword set for comparison
 valid_kwds = (bot_kwd, eot_kwd, bof_kwd, fpof_kwd, inf_kwd, lpof_kwd, eof_kwd,
