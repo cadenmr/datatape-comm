@@ -47,7 +47,7 @@ cmd_ack = _kwd_prefix + bytes('CACKxxxx', _byte_encoding)
 # keyword set for comparison
 valid_kwds = (bot_kwd, eot_kwd, bof_kwd, fpof_kwd, inf_kwd, lpof_kwd, eof_kwd,
               tape_read_start_kwd, tape_read_end_kwd, tape_write_start_kwd,
-              tape_write_end_kwd, cmd_ack)
+              tape_write_end_kwd, tape_write_cont_kwd, tape_write_pause_kwd, cmd_ack)
 
 
 # Packet info
