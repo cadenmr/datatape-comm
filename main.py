@@ -19,7 +19,7 @@ def _wait_for_fpga(s):
     while True:
         rx_d, rx_a = s.recvfrom(rx_udp_bufsize)
         if rx_a == local_network_dev[0]:
-            if rx_d == constants.cmd_ack:
+            if rx_d == constants.cmd_ack or rx_d == constants.tape_write_cont_kwd:
                 break
 
 
