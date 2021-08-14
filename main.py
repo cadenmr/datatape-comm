@@ -5,14 +5,25 @@ import os
 import constants
 import ethio
 
-local_network_dev = (socket.gethostbyname(socket.gethostname()), 1234)
-dest_network_dev = ('192.168.1.128', 1234)
+local_network_dev = ('192.168.1.5', 1234)
+dest_network_dev = ('192.168.1.5', 1234)
 tx_packet_size = 384
 rx_udp_bufsize = 1024
 
 
 def _mode_oob():
     raise ValueError('mode selection value out of bounds')
+
+
+def _wait_for_fpga(s):
+
+    pass
+
+    # while True:
+    #     rx_d, rx_a = s.recvfrom(rx_udp_bufsize)
+    #     if rx_a == local_network_dev[0]:
+    #         if rx_d == constants.cmd_ack:
+    #             break
 
 
 # TODO: REPLACE THIS DIRTY MENU CODE WITH A GUI
@@ -51,6 +62,8 @@ def menu():
 if __name__ == '__main__':
 
     mode, file_path = menu()
+    dest_dev = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    dest_dev.bind(local_network_dev)
 
     # Mode 1: Write to tape
     if mode == 1:
@@ -58,6 +71,44 @@ if __name__ == '__main__':
 
             # TODO: Code this
             pass
+
+            print(f'sending file: {file_path.split("/")[-1]}')
+
+            # send beginning of transmission
+            dest_dev.sendto(constants.bot_kwd, dest_network_dev)
+            # wait for FPGA to acknowledge command
+            _wait_for_fpga(dest_dev)
+            # send beginning of file
+            dest_dev.sendto(constants.bof_kwd, dest_network_dev)
+
+            first_packet = True
+            last_packet = False
+            while True:
+                tx_d = in_file.read(constants.payload_size)
+
+                if len(tx_d) < constants.payload_size:
+                    last_packet = True
+
+                # Select the appropriate prefix
+                if first_packet and not last_packet:
+                    tx_d = constants.fpof_kwd + tx_d
+                    first_packet = False
+                elif not first_packet and last_packet:
+                    tx_d = constants.lpof_kwd + tx_d
+                elif not first_packet and not last_packet:
+                    tx_d = constants.inf_kwd + tx_d
+                else:
+                    raise ValueError(f'wut\n\n(first_packet, last_packet)\n{first_packet, last_packet}')
+
+                # send the packet
+                dest_dev.sendto(tx_d, dest_network_dev)
+
+                if last_packet:
+                    dest_dev.sendto(constants.eof_kwd, dest_network_dev)
+                    break
+
+        dest_dev.sendto(constants.eot_kwd, dest_network_dev)
+        print('done!')
 
     # Mode 2: Read from tape
     elif mode == 2:
