@@ -16,14 +16,11 @@ def _mode_oob():
 
 
 def _wait_for_fpga(s):
-
-    pass
-
-    # while True:
-    #     rx_d, rx_a = s.recvfrom(rx_udp_bufsize)
-    #     if rx_a == local_network_dev[0]:
-    #         if rx_d == constants.cmd_ack:
-    #             break
+    while True:
+        rx_d, rx_a = s.recvfrom(rx_udp_bufsize)
+        if rx_a == local_network_dev[0]:
+            if rx_d == constants.cmd_ack:
+                break
 
 
 # TODO: REPLACE THIS DIRTY MENU CODE WITH A GUI
@@ -69,10 +66,7 @@ if __name__ == '__main__':
     if mode == 1:
         with open(file_path, 'rb') as in_file:
 
-            # TODO: Code this
-            pass
-
-            print(f'sending file: {file_path.split("/")[-1]}')
+            print('sending file...')
 
             # send beginning of transmission
             dest_dev.sendto(constants.bot_kwd, dest_network_dev)
