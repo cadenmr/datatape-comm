@@ -7,7 +7,6 @@ import ethio
 
 local_network_dev = ('192.168.1.5', 1234)
 dest_network_dev = ('192.168.1.5', 1234)
-tx_packet_size = 384
 rx_udp_bufsize = 1024
 
 
@@ -15,6 +14,7 @@ def _mode_oob():
     raise ValueError('mode selection value out of bounds')
 
 
+# Wait for a command acknowledge or tape write continue keyword
 def _wait_for_fpga(s):
     while True:
         rx_d, rx_a = s.recvfrom(rx_udp_bufsize)
@@ -94,6 +94,8 @@ if __name__ == '__main__':
                 else:
                     raise ValueError(f'wut\n\n(first_packet, last_packet)\n{first_packet, last_packet}')
 
+                # wait for the fpga to be ready before we send the next packet
+                _wait_for_fpga(dest_dev)
                 # send the packet
                 dest_dev.sendto(tx_d, dest_network_dev)
 
